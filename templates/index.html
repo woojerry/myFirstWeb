@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+
+        <!-- JQuery import  -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- style.css 파일을 HTML 파일과 같은 폴더에 만들고, head 태그에서 불러오기 -->
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <!-- 구글폰트 -->
+
+
+        <title>영화추천</title>
+
+
+        <script>
+            var rank = new Array(3);
+
+            $(document).ready(function () {
+                fromKOBIS();
+                sendRank();
+            })
+
+            function fromKOBIS() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/kobis',
+                    data: {},
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            let infos = response['movies'];
+                            for (let i = 0; i < 3; i++) {
+                                movieName = infos[i]['movieNm'];
+                                movieDirector = infos[i]['director'];
+                                rank[i] = movieName
+                                //console.log(movieName[0])
+                                // movieName[0] = infos[0]['movieNm'];
+                                let tempHTML = `<h1>${movieName}</h1>`;
+                                $('#a').append(tempHTML);
+
+                            }
+                            //   console.log(rank[0]);
+
+
+                        }
+                    }
+                })
+            }
+
+            function sendRank() {
+                $.ajax({
+                    type: "GET",
+                    url: "/cgv",
+                    data: {},
+                    success: function (response) {
+
+                    }
+
+                })
+            }
+
+
+        </script>
+
+    </head>
+
+    <body>
+        <h2 id="a">영화</h2>
+
+        <div class="card">
+            <div class="card-image"></div>
+            <div class="card-text">
+                <span class="date">4 days ago</span>
+                <h2>Post One</h2>
+                <p>Lorem ipsum dolor sit amet consectetur, Ducimus, repudiandae temporibus omnis illum maxime quod
+                    deserunt eligendi dolor</p>
+            </div>
+            <div class="card-stats">
+                <div class="stat">
+                    <div class="value">4<sup>m</sup></div>
+                    <div class="type">read</div>
+                </div>
+                <div class="stat border">
+                    <div class="value">5123</div>
+                    <div class="type">views</div>
+                </div>
+                <div class="stat">
+                    <div class="value">32</div>
+                    <div class="type">comments</div>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+
+</html>
