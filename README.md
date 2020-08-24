@@ -1,15 +1,14 @@
 <img src="https://user-images.githubusercontent.com/17819874/79853717-5db2f900-8403-11ea-99ba-ed0bb3cdb9ef.png" height="100"/>
 
-# 프로젝트 이름  
+# 국내 박스오피스 순위를 보여주는 웹사이트 
 [![made-with-Markdown](https://img.shields.io/badge/Made%20with-Markdown-1f425f.svg)](http://commonmark.org)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/ohahohah/readme-template/graphs/commit-activity) 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 
 
-> 프로젝트 간략 소개 한 문장 
-- 웹사이트 url / (챗봇일 경우)텔레그램 등 메신저 주소
-- 사이트에 대한 1-2단락 설명
+> 크롤링과 API를 활용한 정보를 종합해 보여주는 웹사이트 
+-
 
 ## 핵심 기능  Key Feature
 - (예시) 실시간 지역별 날씨에 맞는 옷차림 정보를 알려줍니다.
