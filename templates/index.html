@@ -4,93 +4,88 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
               integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
               crossorigin="anonymous">
-
         <!-- JQuery import  -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
         <!-- style.css 파일을 HTML 파일과 같은 폴더에 만들고, head 태그에서 불러오기 -->
-        <link rel="stylesheet" type="text/css" href="styles.css">
+        <link rel="stylesheet" type="text/css" href="static/styles.css">
         <!-- 구글폰트 -->
-
-
         <title>영화추천</title>
-
-
         <script>
             var rank = new Array(3);
-
             $(document).ready(function () {
-                fromKOBIS();
-                sendRank();
+                showCard();
             })
 
-            function fromKOBIS() {
+            function showCard() {
                 $.ajax({
-                    type: 'GET',
-                    url: '/kobis',
+                    type: "GET",
+                    url: "/box_office",
                     data: {},
                     success: function (response) {
                         if (response["result"] == "success") {
-                            let infos = response['movies'];
-                            for (let i = 0; i < 3; i++) {
-                                movieName = infos[i]['movieNm'];
-                                movieDirector = infos[i]['director'];
-                                rank[i] = movieName
-                                //console.log(movieName[0])
-                                // movieName[0] = infos[0]['movieNm'];
-                                let tempHTML = `<h1>${movieName}</h1>`;
-                                $('#a').append(tempHTML);
+                            let movieInfos = response['movie_infos'];
+                            let kobisInfos = movieInfos['KOBIS'];
+                            let cgvInfos = movieInfos['CGV'];
+                            let naverInfos = movieInfos['Naver'];
 
+                            let rank1Title = kobisInfos['rank1_infos']['rank1'];
+                            let rank1Goldenegg = cgvInfos['rank1_infos']['goldenegg1'];
+                            let rank1Opendt = cgvInfos['rank1_infos']['openDt1'];
+                            let rank1Poster = naverInfos['rank1_infos']['poster1'];
+                            let rank1Nscore = naverInfos['rank1_infos']['naverscore1'];
+
+
+
+                            let rank2Title = kobisInfos['rank2_infos']['rank2'];
+                            let rank2Goldenegg = cgvInfos['rank2_infos']['goldenegg2'];
+                            let rank2Opendt = cgvInfos['rank2_infos']['openDt2'];
+                            let rank2Poster = naverInfos['rank2_infos']['poster2'];
+                            let rank2Nscore = naverInfos['rank2_infos']['naverscore2'];
+
+
+
+                            let rank3Title = kobisInfos['rank3_infos']['rank3'];
+                            let rank3Goldenegg = cgvInfos['rank3_infos']['goldenegg3'];
+                            let rank3Opendt = cgvInfos['rank3_infos']['openDt3'];
+                            let rank3Poster = naverInfos['rank3_infos']['poster3'];
+                            let rank3Nscore = naverInfos['rank3_infos']['naverscore3'];
+
+
+
+                            makeCard(rank1Title,rank1Poster ,rank1Goldenegg, rank1Nscore,rank1Opendt,
+                                rank2Title, rank2Poster, rank2Goldenegg,rank2Nscore,rank2Opendt,
+                                rank3Title,rank3Poster,rank3Goldenegg,rank3Nscore,rank3Opendt);
                             }
-                            //   console.log(rank[0]);
-
 
                         }
-                    }
-                })
+                    })
             }
 
-            function sendRank() {
-                $.ajax({
-                    type: "GET",
-                    url: "/cgv",
-                    data: {},
-                    success: function (response) {
-
-                    }
-
-                })
-            }
-
-
-        </script>
-
-    </head>
-
-    <body>
-        <h2 id="a">영화</h2>
-
-        <div class="card">
-            <div class="card-image"></div>
+            function makeCard(rank1Title,rank1Poster,rank1Goldenegg,rank1Nscore,rank1Opendt,
+                              rank2Title,rank2Poster,rank2Goldenegg,rank2Nscore,rank2Opendt,
+                              rank3Title,rank3Poster,rank3Goldenegg,rank3Nscore,rank3Opendt)
+            {
+            let tempHTML1 =
+                `<div class="card">
+            <div class="card-image" style="background-image: url('${rank1Poster}')"></div>
+            <!--  style="{background-image:'' " -->
             <div class="card-text">
-                <span class="date">4 days ago</span>
-                <h2>Post One</h2>
-                <p>Lorem ipsum dolor sit amet consectetur, Ducimus, repudiandae temporibus omnis illum maxime quod
-                    deserunt eligendi dolor</p>
+                <span class="date">${rank1Opendt} 개봉</span>
+                <h4>${rank1Title}</h4>
+                <p>시놉</p>
             </div>
             <div class="card-stats">
                 <div class="stat">
-                    <div class="value">4<sup>m</sup></div>
-                    <div class="type">read</div>
+                    <div class="value">${rank1Goldenegg}</div>
+                    <div class="type">CGV 골든에그</div>
                 </div>
                 <div class="stat border">
-                    <div class="value">5123</div>
-                    <div class="type">views</div>
+                    <div class="value">${rank1Nscore}</div>
+                    <div class="type">Naver 평점</div>
                 </div>
                 <div class="stat">
                     <div class="value">32</div>
@@ -98,8 +93,65 @@
                 </div>
             </div>
         </div>
+             <div class="card">
+            <div class="card-image card2" style="background-image: url('${rank2Poster}')"></div>
+            <div class="card-text card2">
+                <span class="date">${rank2Opendt} 개봉</span>
+                <h2>${rank2Title}</h2>
+                <p>정보</p>
+            </div>
+            <div class="card-stats card2">
+                <div class="stat">
+                    <div class="value">${rank2Goldenegg}</div>
+                    <div class="type">CGV 골든에그</div>
+                </div>
+                <div class="stat border">
+                    <div class="value">${rank2Nscore}</div>
+                    <div class="type">Naver 평점</div>
+                </div>
+                <div class="stat">
+                    <div class="value">21</div>
+                    <div class="type">comments</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-image card3" style="background-image: url('${rank3Poster}')"></div>
+            <div class="card-text card3">
+                <span class="date">${rank3Opendt} 개봉</span>
+                <h2>${rank3Title}</h2>
+                <p>정보</p>
+            </div>
+            <div class="card-stats card3">
+                <div class="stat">
+                    <div class="value">${rank3Goldenegg}</div>
+                    <div class="type">CGV 골든에그</div>
+                </div>
+                <div class="stat border">
+                    <div class="value">${rank3Nscore}</div>
+                    <div class="type">Naver 평점</div>
+                </div>
+                <div class="stat">
+                    <div class="value">15</div>
+                    <div class="type">comments</div>
+                </div>
+            </div>
+        </div>`
+                 $('#movies').append(tempHTML1);
+            }
+
+        </script>
+    </head>
+    <body>
+        <button>Hello</button>
+        <div class="container" id="movies" style="margin-top: 120px"></div>
+        <!-- <h2 id="a">영화</h2>
+
+
+
+
+        -->
 
 
     </body>
-
 </html>
