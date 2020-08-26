@@ -17,10 +17,10 @@
         <script>
             var rank = new Array(3);
             $(document).ready(function () {
-                showCard();
+                showBoxoffice();
             })
 
-            function showCard() {
+            function showBoxoffice() {
                 $.ajax({
                     type: "GET",
                     url: "/box_office",
@@ -31,52 +31,63 @@
                             let kobisInfos = movieInfos['KOBIS'];
                             let cgvInfos = movieInfos['CGV'];
                             let naverInfos = movieInfos['Naver'];
+                            let wactchaInfos = movieInfos['Watcha'];
+                            let date = kobisInfos['date']
 
                             let rank1Title = kobisInfos['rank1_infos']['rank1'];
                             let rank1Goldenegg = cgvInfos['rank1_infos']['goldenegg1'];
                             let rank1Opendt = cgvInfos['rank1_infos']['openDt1'];
                             let rank1Poster = naverInfos['rank1_infos']['poster1'];
                             let rank1Nscore = naverInfos['rank1_infos']['naverscore1'];
-
-
+                            let rank1Director = naverInfos['rank1_infos']['director1'];
+                            let rank1Actors = naverInfos['rank1_infos']['actors1'];
+                            let rank1Wscore = wactchaInfos['rank1_infos']['wscore1'];
+                            let rank1Att = wactchaInfos['rank1_infos']['att1'];
 
                             let rank2Title = kobisInfos['rank2_infos']['rank2'];
                             let rank2Goldenegg = cgvInfos['rank2_infos']['goldenegg2'];
                             let rank2Opendt = cgvInfos['rank2_infos']['openDt2'];
                             let rank2Poster = naverInfos['rank2_infos']['poster2'];
                             let rank2Nscore = naverInfos['rank2_infos']['naverscore2'];
-
-
+                            let rank2Director = naverInfos['rank2_infos']['director2'];
+                            let rank2Actors = naverInfos['rank2_infos']['actors2'];
+                            let rank2Wscore = wactchaInfos['rank2_infos']['wscore2'];
+                            let rank2Att = wactchaInfos['rank2_infos']['att2'];
 
                             let rank3Title = kobisInfos['rank3_infos']['rank3'];
                             let rank3Goldenegg = cgvInfos['rank3_infos']['goldenegg3'];
                             let rank3Opendt = cgvInfos['rank3_infos']['openDt3'];
                             let rank3Poster = naverInfos['rank3_infos']['poster3'];
                             let rank3Nscore = naverInfos['rank3_infos']['naverscore3'];
+                            let rank3Director = naverInfos['rank3_infos']['director3'];
+                            let rank3Actors = naverInfos['rank3_infos']['actors3'];
+                            let rank3Wscore = wactchaInfos['rank3_infos']['wscore3'];
+                            let rank3Att = wactchaInfos['rank3_infos']['att3'];
 
 
-
-                            makeCard(rank1Title,rank1Poster ,rank1Goldenegg, rank1Nscore,rank1Opendt,
-                                rank2Title, rank2Poster, rank2Goldenegg,rank2Nscore,rank2Opendt,
-                                rank3Title,rank3Poster,rank3Goldenegg,rank3Nscore,rank3Opendt);
-                            }
-
+                            makeCard(rank1Title, rank1Poster, rank1Goldenegg, rank1Nscore, rank1Opendt, rank1Director, rank1Actors, rank1Wscore, rank1Att,
+                                rank2Title, rank2Poster, rank2Goldenegg, rank2Nscore, rank2Opendt, rank2Director, rank2Actors, rank2Wscore, rank2Att,
+                                rank3Title, rank3Poster, rank3Goldenegg, rank3Nscore, rank3Opendt, rank3Director, rank3Actors, rank3Wscore, rank3Att);
+                            showDate(date);
                         }
-                    })
+
+                    }
+                })
             }
 
-            function makeCard(rank1Title,rank1Poster,rank1Goldenegg,rank1Nscore,rank1Opendt,
-                              rank2Title,rank2Poster,rank2Goldenegg,rank2Nscore,rank2Opendt,
-                              rank3Title,rank3Poster,rank3Goldenegg,rank3Nscore,rank3Opendt)
-            {
-            let tempHTML1 =
-                `<div class="card">
+            function makeCard(rank1Title, rank1Poster, rank1Goldenegg, rank1Nscore, rank1Opendt, rank1Director, rank1Actors,rank1Wscore, rank1Att,
+                              rank2Title, rank2Poster, rank2Goldenegg, rank2Nscore, rank2Opendt, rank2Director, rank2Actors,rank2Wscore, rank2Att,
+                              rank3Title, rank3Poster, rank3Goldenegg, rank3Nscore, rank3Opendt, rank3Director, rank3Actors,rank3Wscore, rank3Att) {
+                let tempHTML1 =
+                    `<div class="card">
             <div class="card-image" style="background-image: url('${rank1Poster}')"></div>
             <!--  style="{background-image:'' " -->
             <div class="card-text">
                 <span class="date">${rank1Opendt} 개봉</span>
                 <h4>${rank1Title}</h4>
-                <p>시놉</p>
+                <p>감독 : ${rank1Director}</p>
+                <p>출연 : ${rank1Actors}</p>
+                <p>${rank1Att}</p>
             </div>
             <div class="card-stats">
                 <div class="stat">
@@ -85,11 +96,11 @@
                 </div>
                 <div class="stat border">
                     <div class="value">${rank1Nscore}</div>
-                    <div class="type">Naver 평점</div>
+                    <div class="type">NAVER 평점</div>
                 </div>
                 <div class="stat">
-                    <div class="value">32</div>
-                    <div class="type">comments</div>
+                    <div class="value">${rank1Wscore}</div>
+                    <div class="type">WATCHA PEDIA</div>
                 </div>
             </div>
         </div>
@@ -97,8 +108,10 @@
             <div class="card-image card2" style="background-image: url('${rank2Poster}')"></div>
             <div class="card-text card2">
                 <span class="date">${rank2Opendt} 개봉</span>
-                <h2>${rank2Title}</h2>
-                <p>정보</p>
+                <h4>${rank2Title}</h4>
+                <p>감독: ${rank2Director}</p>
+                <p>출연 : ${rank2Actors}</p>
+                <p>${rank2Att}</p>
             </div>
             <div class="card-stats card2">
                 <div class="stat">
@@ -110,8 +123,8 @@
                     <div class="type">Naver 평점</div>
                 </div>
                 <div class="stat">
-                    <div class="value">21</div>
-                    <div class="type">comments</div>
+                    <div class="value">${rank2Wscore}</div>
+                    <div class="type">WATCHA PEDIA</div>
                 </div>
             </div>
         </div>
@@ -119,8 +132,10 @@
             <div class="card-image card3" style="background-image: url('${rank3Poster}')"></div>
             <div class="card-text card3">
                 <span class="date">${rank3Opendt} 개봉</span>
-                <h2>${rank3Title}</h2>
-                <p>정보</p>
+                <h4>${rank3Title}</h4>
+                <p>감독: ${rank3Director}</p>
+                <p>출연 : ${rank3Actors}</p>
+                <p>${rank3Att}</p>
             </div>
             <div class="card-stats card3">
                 <div class="stat">
@@ -132,25 +147,35 @@
                     <div class="type">Naver 평점</div>
                 </div>
                 <div class="stat">
-                    <div class="value">15</div>
-                    <div class="type">comments</div>
+                    <div class="value">${rank3Wscore}</div>
+                    <div class="type">WATCHA PEDIA</div>
                 </div>
             </div>
         </div>`
-                 $('#movies').append(tempHTML1);
+                $('#movies').append(tempHTML1);
+            }
+
+             function showDate(date) {
+                let tempHTML2 =`<div class="title" style="margin-top: 20px"></div><h2 style="color: cornsilk">국내 박스오피스</h2>
+                <h6 style="color: aliceblue"><${date}기준></date기준></h6></div>`;
+                 $('#header').append(tempHTML2);
             }
 
         </script>
     </head>
     <body>
-        <button>Hello</button>
-        <div class="container" id="movies" style="margin-top: 120px"></div>
-        <!-- <h2 id="a">영화</h2>
+
+        <div>
+        <h2 id="header" style="text-align:center"></h2>
+        </div>
+            <button>다른날 정보 보기</button>
+        <div class="container" id="movies" style="margin-top: 0px"></div>
 
 
 
 
-        -->
+
+
 
 
     </body>

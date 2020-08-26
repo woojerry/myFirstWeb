@@ -2,7 +2,8 @@ from flask import Flask, render_template, jsonify, request
 import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
-
+from selenium import webdriver
+import time
 app = Flask(__name__)
 
 client = MongoClient('localhost', 27017)  # mongoDB는 27017 포트로 돌아갑니다.
@@ -46,10 +47,30 @@ def box_office():
     rank2_poster = ''
     rank3_poster = ''
 
+    #영화감독
+    rank1_director = ''
+    rank2_director = ''
+    rank3_director = ''
+
+    #출연배우
+    rank1_actors =[]
+    rank2_actors = []
+    rank3_actors = []
+
+    #누적관객수
+    rank1_attendance = ''
+    rank2_attendance = ''
+    rank3_attendance = ''
+
+    #왓챠 평점
+    rank1_wscore = 0
+    rank2_wscore = 0
+    rank3_wscore = 0
+
     #crawl from CGV
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-    data = requests.get('http://www.cgv.co.kr/movies/?lt=1&ft=0', headers=headers)
+    data = requests.get('http://www.cgv.co.kr/movies/?lt=1&ft=1', headers=headers)
     soup = BeautifulSoup(data.text, 'html.parser')
 
     crawl_info =soup.select_one('#contents > div.wrap-movie-chart > div.sect-movie-chart')
@@ -62,7 +83,7 @@ def box_office():
         movie_name = infos.select_one('div.box-contents > a > strong').text
         percent = infos.select_one('div.box-contents > div > div > span.percent').text
         movie_opendt = infos.select_one('div.box-contents > span.txt-info > strong').text.strip().split("개")[0].strip()
-        ##contents > div.wrap-movie-chart > div.sect-movie-chart > ol:nth-child(2) > li:nth-child(1) > div.box-contents > span.txt-info > strong
+        #if : 오면 -> - 로 바꿔주기 !
         if movie_name == rank1 :
             rank1_percent = percent
             rank1_opendt = movie_opendt
@@ -98,18 +119,60 @@ def box_office():
     for crawl_info in crawl_infos[0:5]:
         movie_name = crawl_info.select_one('dl > dt > a').text
         naver_score = crawl_info.select_one('dl > dd.star > dl.info_star > dd > div > a > span.num').text
-        movie_poster = crawl_info.select_one('div > a > img')['src'].split('?')[0]
+        movie_poster = crawl_info.select_one('div > a > img')['src'].split('?')[0] #포스터 화질 개선을 위해 뒷부분 split
         movie_director = crawl_info.select_one('dl > dd:nth-child(3) > dl > dd:nth-child(4) > span > a').text
-        # content > div.article > div:nth-child(1) > div.lst_wrap > ul > li:nth-child(1) > dl > dd:nth-child(3) > dl > dd:nth-child(4) > span > a
+        actors = crawl_info.select('dl > dd:nth-child(3) > dl > dd:nth-child(6) > span > a')
+        movie_actor = []
+        for i in actors:
+            actor = i.text
+            movie_actor.append(actor)
+
         if movie_name == rank1 :
             rank1_score = naver_score
             rank1_poster = movie_poster
+            rank1_director = movie_director
+            rank1_actors = movie_actor
         elif movie_name == rank2 :
             rank2_score = naver_score
             rank2_poster = movie_poster
+            rank2_director = movie_director
+            rank2_actors = movie_actor
         elif movie_name == rank3 :
             rank3_score = naver_score
             rank3_poster = movie_poster
+            rank3_director = movie_director
+            rank3_actors = movie_actor
+
+    # crawl_from_WATCHA PEDIA by selenium
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('headless')
+    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('lang=ko_KR')
+
+    driver = webdriver.Chrome('chromedriver.exe', chrome_options=chrome_options)
+    driver.implicitly_wait(1)
+    driver.get('https://pedia.watcha.com/ko-KR')
+
+
+    # chrome.find_element_by_css_selector('')
+    source = driver.page_source
+    soup = BeautifulSoup(source, 'html.parser')
+    crawl_from_watcha = soup.select('#root > div > div.css-1sh3zvx-NavContainer.ebsyszu0 > section > div > section > div:nth-child(1) >'
+                                    ' div.css-gc1vu8-StyledHorizontalScrollOuterContainer.ebeya3l4 > div > div.css-chidac-ScrollBar.e1f5xhlb1 > div > div > ul > li')
+    for infos in crawl_from_watcha:
+        movie_name = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.css-1teivyt-ContentTitle.e3fgkal3').text
+        movie_attendance = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.css-hyqnp8-StyledContentBoxOfficeStats.ebeya3l13').text.strip().split('・')[1]
+        watcha_score = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.average.css-uaqea0-ContentRating-StyledContentRating.ebeya3l14 > span:nth-child(3)').text
+        if movie_name == rank1:
+            rank1_attendance = movie_attendance
+            rank1_wscore = watcha_score
+        elif movie_name == rank2:
+            rank2_attendance = movie_attendance
+            rank2_wscore = watcha_score
+        elif movie_name == rank3:
+            rank3_attendance = movie_attendance
+            rank3_wscore = watcha_score
+    driver.quit()
 
     movie_infos = {
         'KOBIS':{
@@ -142,15 +205,35 @@ def box_office():
             'rank1_infos' :{
                 'naverscore1' : rank1_score,
                 'poster1' : rank1_poster,
+                'director1' : rank1_director,
+                'actors1' : rank1_actors
             },
             'rank2_infos': {
                 'naverscore2': rank2_score,
                 'poster2': rank2_poster,
+                'director2': rank2_director,
+                'actors2' : rank2_actors,
             },
             'rank3_infos' :{
                 'naverscore3' : rank3_score,
                 'poster3' : rank3_poster,
+                'director3': rank3_director,
+                'actors3' : rank3_actors
             },
+        },
+        'Watcha':{
+            'rank1_infos' :{
+                'wscore1' : rank1_wscore,
+                'att1': rank1_attendance
+            },
+            'rank2_infos' :{
+                'wscore2' : rank2_wscore,
+                'att2': rank2_attendance
+            },
+            'rank3_infos' :{
+                'wscore3' : rank1_wscore,
+                'att3': rank3_attendance
+            }
         }
     }
     #db.myproject.insert_one(movie_infos)

@@ -1,9 +1,8 @@
 body {
   width: 100vw;
   height: 100vh;
-
   background:url("background.jpg");
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .container {
@@ -15,7 +14,7 @@ body {
 .card {
   display: grid;
   grid-template-columns: 300px;
-  grid-template-rows: 390px 180px 80px;
+  grid-template-rows: 385px 220px 80px;
   grid-template-areas: "image" "text" "stats";
 
   border-radius: 18px;
@@ -37,20 +36,22 @@ body {
 
 .card-text {
   grid-area: text;
-  margin: 25px;
+  margin: 15px;
 }
 .card-text .date {
   color: rgb(255, 7, 110);
   font-size:13px;
 }
 .card-text p {
-  color: grey;
-  font-size:15px;
+  color: black;
+  font-size:14px;
   font-weight: 300;
+  margin-top: 0;
+  margin-bottom: 5px;
 }
-.card-text h2 {
-  margin-top:0px;
-  font-size:28px;
+.card-text h4 {
+  margin-top:5px;
+
 }
 .card-stats {
   grid-area: stats;
