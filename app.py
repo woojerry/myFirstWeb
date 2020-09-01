@@ -3,10 +3,10 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from selenium import webdriver
-import time
+
 app = Flask(__name__)
 
-client = MongoClient('localhost', 27017)  # mongoDB는 27017 포트로 돌아갑니다.
+client = MongoClient('mongodb://test:test@localhost', 27017)  # mongoDB는 27017 포트로 돌아갑니다.
 db = client.dbsparta
 
 
@@ -14,13 +14,20 @@ db = client.dbsparta
 def home():
     return render_template('index.html')
 
+# @app.route('/date', methods=['POST'])
+# def get_Date() :
+#      date_from_button = request.form['datepicker1']
+#      print(date_from_button)
+
+
 @app.route('/box_office', methods=['GET'])
 def box_office():
     response = requests.get('http://www.kobis.or.kr/kobis/business/main/searchMainDailyBoxOffice.do')
     movies = response.json()
 
     #기준일
-    date = movies[0]['endDate']
+    date = movies[0]['endDate'] #YYYY.MM.DD
+    date_for_calendar = movies[0]['showDt'] #YYYYMMDD
 
     #영화랭킹 Top3
     rank1 = movies[0]['movieNm']
@@ -81,9 +88,10 @@ def box_office():
     first_ol_info = crawl_info.select('ol:nth-child(2) > li')
     for infos in first_ol_info :
         movie_name = infos.select_one('div.box-contents > a > strong').text
+        movie_name = movie_name.replace("-", ": ") #if : 오면 -> - 로 바꿔주기 !
         percent = infos.select_one('div.box-contents > div > div > span.percent').text
         movie_opendt = infos.select_one('div.box-contents > span.txt-info > strong').text.strip().split("개")[0].strip()
-        #if : 오면 -> - 로 바꿔주기 !
+
         if movie_name == rank1 :
             rank1_percent = percent
             rank1_opendt = movie_opendt
@@ -98,6 +106,7 @@ def box_office():
     second_ol_info = crawl_info.select('ol:nth-child(3) > li')
     for infos in second_ol_info :
         movie_name = infos.select_one('div.box-contents > a > strong').text
+        movie_name = movie_name.replace("-", ": ")
         percent = infos.select_one('div.box-contents > div > div > span.percent').text
         movie_opendt = infos.select_one('div.box-contents > span.txt-info > strong').text.strip().split("개")[0].strip()
         if movie_name == rank1 :
@@ -149,20 +158,31 @@ def box_office():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('lang=ko_KR')
 
-    driver = webdriver.Chrome('chromedriver.exe', chrome_options=chrome_options)
+    driver = webdriver.Chrome('/home/ubuntu/my_project/chromedriver', chrome_options=chrome_options)
+                                 # 디버깅 시 -> chromedriver.exe 배포시에는 -> /home/ubuntu/my_project/chromedriver
     driver.implicitly_wait(1)
     driver.get('https://pedia.watcha.com/ko-KR')
-
 
     # chrome.find_element_by_css_selector('')
     source = driver.page_source
     soup = BeautifulSoup(source, 'html.parser')
-    crawl_from_watcha = soup.select('#root > div > div.css-1sh3zvx-NavContainer.ebsyszu0 > section > div > section > div:nth-child(1) >'
-                                    ' div.css-gc1vu8-StyledHorizontalScrollOuterContainer.ebeya3l4 > div > div.css-chidac-ScrollBar.e1f5xhlb1 > div > div > ul > li')
-    for infos in crawl_from_watcha:
-        movie_name = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.css-1teivyt-ContentTitle.e3fgkal3').text
-        movie_attendance = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.css-hyqnp8-StyledContentBoxOfficeStats.ebeya3l13').text.strip().split('・')[1]
-        watcha_score = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.average.css-uaqea0-ContentRating-StyledContentRating.ebeya3l14 > span:nth-child(3)').text
+
+    # Linux Watcha ver.
+    crawl_from_watcha = soup.select(
+        'ul.ebeya3l0.css-wvdjot-VisualUl-StyledHorizontalUl-StyledHorizontalUlWithContentPosterList-RowList.eykn4p10>li')
+    for infos in crawl_from_watcha[0:5]:
+        movie_name = infos.select_one('a > div > div.css-1teivyt-ContentTitle.e3fgkal3').text
+        movie_attendance = infos.select_one('a > div > div.css-hyqnp8-StyledContentBoxOfficeStats.ebeya3l13').text.strip().split('・')[1]
+        watcha_score = infos.select_one('a > div > div> span:nth-child(3)').text
+
+    # Windows Watcha ver.
+    # crawl_from_watcha = soup.select('#root > div > div.css-1sh3zvx-NavContainer.ebsyszu0 > section > div > section > div:nth-child(1) >'
+    #                                 ' div.css-gc1vu8-StyledHorizontalScrollOuterContainer.ebeya3l4 > div > div.css-chidac-ScrollBar.e1f5xhlb1 > div > div > ul > li')
+    # for infos in crawl_from_watcha[0:4]:
+    #     movie_name = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.css-1teivyt-ContentTitle.e3fgkal3').text
+    #     movie_attendance = infos.select_one('a > div > div.css-hyqnp8-StyledContentBoxOfficeStats.ebeya3l13').text.strip().split('・')[1]
+    #     watcha_score = infos.select_one('a > div.css-dmreg0-ContentInfo.e3fgkal2 > div.average.css-uaqea0-ContentRating-StyledContentRating.ebeya3l14 > span:nth-child(3)').text
+
         if movie_name == rank1:
             rank1_attendance = movie_attendance
             rank1_wscore = watcha_score
@@ -231,7 +251,7 @@ def box_office():
                 'att2': rank2_attendance
             },
             'rank3_infos' :{
-                'wscore3' : rank1_wscore,
+                'wscore3' : rank3_wscore,
                 'att3': rank3_attendance
             }
         }
@@ -241,4 +261,4 @@ def box_office():
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5005, debug=True)
+    app.run('0.0.0.0', port=5000, debug=True)

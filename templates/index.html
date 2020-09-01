@@ -13,12 +13,51 @@
         <!-- style.css 파일을 HTML 파일과 같은 폴더에 만들고, head 태그에서 불러오기 -->
         <link rel="stylesheet" type="text/css" href="static/styles.css">
         <!-- 구글폰트 -->
-        <title>영화추천</title>
+
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery.min.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+        <title>Box Office Top3</title>
         <script>
             var rank = new Array(3);
+            var loadingDiv = document.getElementById('loading');
             $(document).ready(function () {
+                showSpinner();
                 showBoxoffice();
             })
+            // $(function getDate() {
+            //     $("#datepicker1").datepicker({
+            //         dateFormat: 'yymmdd',
+            //         dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+            //         dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            //         dayNames: ["일", "월", "화", "수", "목", "금", "토"],
+            //         onSelect: function () {
+            //             var date = $.datepicker.formatDate("yymmdd", $("#datepicker1").datepicker("getDate"));
+            //             console.log(date);
+            //         }
+            //     });
+            // });
+
+
+            // function sendDate() {
+            //     let date1 = $('#datepicker1').val();
+            //     console.log(date1)
+            //     $.ajax({
+            //         type: "POST",
+            //         url: "/date",
+            //         data: {'date': date1},
+            //         success: function (response) { // 성공하면
+            //             if (response["result"] == "success") {
+            //             }
+            //         }
+            //     })
+            // }
+
 
             function showBoxoffice() {
                 $.ajax({
@@ -64,20 +103,21 @@
                             let rank3Wscore = wactchaInfos['rank3_infos']['wscore3'];
                             let rank3Att = wactchaInfos['rank3_infos']['att3'];
 
-
+                            hideSpinner();
                             makeCard(rank1Title, rank1Poster, rank1Goldenegg, rank1Nscore, rank1Opendt, rank1Director, rank1Actors, rank1Wscore, rank1Att,
                                 rank2Title, rank2Poster, rank2Goldenegg, rank2Nscore, rank2Opendt, rank2Director, rank2Actors, rank2Wscore, rank2Att,
                                 rank3Title, rank3Poster, rank3Goldenegg, rank3Nscore, rank3Opendt, rank3Director, rank3Actors, rank3Wscore, rank3Att);
                             showDate(date);
+
                         }
 
                     }
                 })
             }
 
-            function makeCard(rank1Title, rank1Poster, rank1Goldenegg, rank1Nscore, rank1Opendt, rank1Director, rank1Actors,rank1Wscore, rank1Att,
-                              rank2Title, rank2Poster, rank2Goldenegg, rank2Nscore, rank2Opendt, rank2Director, rank2Actors,rank2Wscore, rank2Att,
-                              rank3Title, rank3Poster, rank3Goldenegg, rank3Nscore, rank3Opendt, rank3Director, rank3Actors,rank3Wscore, rank3Att) {
+            function makeCard(rank1Title, rank1Poster, rank1Goldenegg, rank1Nscore, rank1Opendt, rank1Director, rank1Actors, rank1Wscore, rank1Att,
+                              rank2Title, rank2Poster, rank2Goldenegg, rank2Nscore, rank2Opendt, rank2Director, rank2Actors, rank2Wscore, rank2Att,
+                              rank3Title, rank3Poster, rank3Goldenegg, rank3Nscore, rank3Opendt, rank3Director, rank3Actors, rank3Wscore, rank3Att) {
                 let tempHTML1 =
                     `<div class="card">
             <div class="card-image" style="background-image: url('${rank1Poster}')"></div>
@@ -153,30 +193,39 @@
             </div>
         </div>`
                 $('#movies').append(tempHTML1);
+
             }
 
-             function showDate(date) {
-                let tempHTML2 =`<div class="title" style="margin-top: 20px"></div><h2 style="color: cornsilk">국내 박스오피스</h2>
-                <h6 style="color: aliceblue"><${date}기준></date기준></h6></div>`;
-                 $('#header').append(tempHTML2);
+            function showDate(date) {
+                let tempHTML2 = `
+                <h6 style="color: aliceblue;font-size: 20px"><${date}기준></date기준></h6></div>`;
+                $('#header').replaceWith(tempHTML2);
+            }
+
+            function showSpinner() {
+                $(".loading").css('visibility', 'visible');
+            }
+
+            function hideSpinner() {
+                $(".loading").css('visibility', 'hidden');
             }
 
         </script>
     </head>
     <body>
-
-        <div>
-        <h2 id="header" style="text-align:center"></h2>
+        <h2 style="text-align:center;margin-top: 20px;color:cornsilk;">국내 박스오피스 TOP3</h2>
+        <div style="display: flex; justify-content: center;"><h6 id="header"></h6>
         </div>
-            <button>다른날 정보 보기</button>
+<!--        <div class="calendar" style="display: flex; justify-content: center;"><input type="text" ; name="datepicker1"-->
+<!--                                                                                     placeholder="날짜를 선택해주세요" ;-->
+<!--                                                                                     id="datepicker1">-->
+
+<!--            <button onclick="sendDate()">보기</button>-->
+<!--        </div>-->
         <div class="container" id="movies" style="margin-top: 0px"></div>
-
-
-
-
-
-
-
+        <div id="loading" class="loading">
+            Loading
+        </div>
 
     </body>
 </html>
