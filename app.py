@@ -168,9 +168,14 @@ def box_office():
      # Linux Watcha ver.
     crawl_from_watcha = soup.select(
         'ul.ebeya3l0.css-wvdjot-VisualUl-StyledHorizontalUl-StyledHorizontalUlWithContentPosterList-RowList.eykn4p10>li')
-    for infos in crawl_from_watcha[0:6]:
+    for infos in crawl_from_watcha[0:7]:
         movie_name = infos.select_one('a > div > div.css-1teivyt-ContentTitle.e3fgkal3').text
-        movie_attendance = infos.select_one('a > div > div.css-hyqnp8-StyledContentBoxOfficeStats.ebeya3l13').text.strip().split('・')[1]
+        movie_attendance_text = infos.select_one('a > div > div.css-hyqnp8-StyledContentBoxOfficeStats.ebeya3l13').text
+        try :
+            movie_attendance = movie_attendance_text.strip().split('・')[1]
+        except:
+            movie_attendance = movie_attendance_text
+
         watcha_score = infos.select_one('a > div > div> span:nth-child(3)').text
 
     # Windows Watcha ver.
