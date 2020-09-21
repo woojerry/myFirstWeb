@@ -15,7 +15,7 @@
 - CGV골든에그지수, 네이버평점, Watcha평점, 감독 및 출연배우, 누적관객수를 알려줍니다.
 
 ## Reference
-*(참고 리소스,  code snippet, 라이센스 정보를 표기합니다)*
+*(참고 리소스,  code snippet, 라이센스 정보)*
 - https://redstapler.co/rpg-style-card-design-with-hover-effect-html-css-tutorial/ : Card CSS
 - http://www.kobis.or.kr/kobis/business/main/main.do : 영화 박스오피스 정보
 - https://pedia.watcha.com/ko-KR : Watcha Pedia 평점 및 누적관객수
